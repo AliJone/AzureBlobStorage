@@ -39,19 +39,10 @@ async function extractMetadata(headers) {
 
 async function uploadImageStream(blobName, dataStream) {
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    // Setting the x-ms-blob-type header explicitly
-    const options = {
-        headers: {
-            "x-ms-blob-type": "BlockBlob"
-        }
-    };
-    blockBlobClient.setHttpHeaders({
-        "x-ms-blob-type": "BlockBlob"
-    });
-    await blockBlobClient.uploadStream(dataStream, undefined, undefined, options);
+    await blockBlobClient.uploadStream(dataStream);
     return blockBlobClient.url;
-}
 
+}
 
 async function storeMetadata(name, caption, fileType, imageUrl) {
     const database = client.db('images');
@@ -70,6 +61,9 @@ async function storeMetadata(name, caption, fileType, imageUrl) {
 async function handleImageUpload(req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('x-ms-blob-type', 'BlockBlob');
+    //set req headers
+    req.headers['x-ms-blob-type'] = 'BlockBlob';
 
     if (req.url === '/api/upload' && req.method === 'POST') {
         try {
