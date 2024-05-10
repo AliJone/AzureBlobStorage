@@ -39,11 +39,19 @@ async function extractMetadata(headers) {
 
 async function uploadImageStream(blobName, dataStream) {
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    const options = { blobHTTPHeaders: { blobContentType: 'image/jpeg' }, metadata: { } };
+    // Setting the x-ms-blob-type header explicitly
+    const options = {
+        blobHTTPHeaders: {
+            blobContentType: 'image/jpeg'
+        },
+        headers: {
+            "x-ms-blob-type": "BlockBlob"
+        }
+    };
     await blockBlobClient.uploadStream(dataStream, undefined, undefined, options);
     return blockBlobClient.url;
-
 }
+
 
 async function storeMetadata(name, caption, fileType, imageUrl) {
     const database = client.db('images');
