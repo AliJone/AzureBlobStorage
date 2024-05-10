@@ -39,7 +39,8 @@ async function extractMetadata(headers) {
 
 async function uploadImageStream(blobName, dataStream) {
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    await blockBlobClient.uploadStream(dataStream);
+    const options = { blobHTTPHeaders: { blobContentType: 'image/jpeg' }, metadata: { } };
+    await blockBlobClient.uploadStream(dataStream, undefined, undefined, options);
     return blockBlobClient.url;
 
 }
